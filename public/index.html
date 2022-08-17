@@ -8,12 +8,63 @@
       html, body, canvas {margin: 0;padding: 0;border: 0;}
       canvas {display: block;}
       #app { width: 100%; height: 100% }
+      .notice { 
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 10px;
+        padding: 10px;
+        margin: 10px;
+        max-width: 300px;
+        color: white;
+      }
+      .notice-holder {
+        position: fixed;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        top: 0;
+        left: 0;
+      }
+      a {
+        text-decoration: none;
+        color: #45c;
+      }
     </style>
   </head>
   <body>
-  <!-- Application Canvas -->
-  <canvas id="app"></canvas>
-  <!-- this needs to be called here to ensure all elements are available -->
+    <!-- Application Canvas -->
+    <canvas id="app"></canvas>
+
+    <div class="notice-holder">
+      <div class="notice">
+        Interactive water demo. You can also edit water behaviour by clicking "Water
+        controls" to the right.
+      </div>
+
+      <div class="notice">
+        CONTROLS<br/>
+        Mouse: Move sphere around and see how it interacts with water.<br/>
+        CLICK + Mouse: Rotate camera.
+      </div>
+
+      <div class="notice">
+        Water physics is approximated by simulating each pixel as a particle that has
+        momentum, vertical position and force from neighboring particles.
+      </div>
+
+      <div class="notice">
+        The height of water is then converted to a normal map and applied to a nice
+        reflective plane.
+      </div>
+
+      <div class="notice">
+        Source code:
+        <a href="https://github.com/charlieamer/threejs-water">
+          https://github.com/charlieamer/threejs-water
+        </a>
+      </div>
+    </div>
+
+    <!-- this needs to be called here to ensure all elements are available -->
     <script src="dist/index.js" type="application/javascript"></script>
   </body>
 </html>

@@ -1,17 +1,22 @@
+import { GUI } from 'dat.gui';
 import {
   AmbientLight,
   BoxGeometry,
-  CameraHelper,
+  CubeTextureLoader,
   DirectionalLight,
-  GridHelper,
+  DoubleSide,
   Mesh,
   MeshPhongMaterial,
   PerspectiveCamera,
+  PlaneGeometry,
   Scene,
+  SphereGeometry,
+  Vector3,
   WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { InteractionCapture } from './InteractionCapture';
+import { degToRad } from 'three/src/math/MathUtils';
+import { WaterInteractor } from './WaterInteractor';
 
 function resizeRendererToDisplaySize(renderer: WebGLRenderer) {
   const canvas = renderer.domElement;
@@ -61,26 +66,82 @@ const scene = new Scene();
 // ambient light
 scene.add(new AmbientLight(0x333333));
 
-scene.add(new GridHelper());
+// scene.add(new GridHelper());
 
 // interactor
-const interactor = new InteractionCapture(5, 0.5, 0.1);
+const interactor = new WaterInteractor(5, 0.5, 0.1, 2048);
 interactor.position.y = -0.55;
 interactor.lookAt(0, 1, 0);
-scene.add(new CameraHelper(interactor));
 
 // cube
-// for (let i = 0; i < 100; i++) {
-const geometry = new BoxGeometry(1, 1, 1);
-const material = new MeshPhongMaterial({
-  // map: interactor.texture,
-});
-const cube = new Mesh(geometry, material);
-// cube.position.fromArray([0, 0, 0].map(() => (Math.random() - 0.5) * 10));
-cube.position.y = 0.5;
-cube.frustumCulled = false;
+const cube = new Mesh(
+  new BoxGeometry(0.3, 0.3, 0.3),
+  new MeshPhongMaterial({
+    side: DoubleSide, // important for interaction capture
+  }),
+);
 scene.add(cube);
-// }
+
+// cubemap for preview plane
+const path = 'https://threejs.org/examples/textures/cube/Park2/';
+const format = '.jpg';
+const urls = [
+  path + 'posx' + format,
+  path + 'negx' + format,
+  path + 'posy' + format,
+  path + 'negy' + format,
+  path + 'posz' + format,
+  path + 'negz' + format,
+];
+const reflectionCube = new CubeTextureLoader().load(urls);
+scene.background = reflectionCube;
+// preview plane
+const previewPlane = new Mesh(
+  new PlaneGeometry(interactor.worldSize, interactor.worldSize),
+  new MeshPhongMaterial({
+    envMap: reflectionCube,
+    reflectivity: 0.8,
+    normalMap: interactor.texture,
+    color: 0x789abc,
+  }),
+  // new MeshBasicMaterial({
+  //   map: interactor.normalTexture,
+  // }),
+);
+previewPlane.rotateX(-degToRad(90));
+scene.add(previewPlane);
+
+// ball with manual control
+const sphere = new Mesh(
+  new SphereGeometry(0.2),
+  new MeshPhongMaterial({ side: DoubleSide }),
+);
+sphere.position.y = 0.15;
+scene.add(sphere);
+
+// debug
+const gui = new GUI();
+const waterFolder = gui.addFolder('Water controls');
+waterFolder.add(interactor, 'damping', 0.8, 1.0, 0.01);
+waterFolder.add(interactor, 'neighborsStrength', 0.8, 2.0, 0.1);
+waterFolder.add(interactor, 'stopThreshold', 0, 0.03, 0.001);
+
+function updateMouse2dPos(event: MouseEvent): void {
+  const vec = new Vector3(); // create once and reuse
+  const pos = new Vector3(); // create once and reuse
+  vec.set(
+    (event.clientX / window.innerWidth) * 2 - 1,
+    -(event.clientY / window.innerHeight) * 2 + 1,
+    0.5,
+  );
+  vec.unproject(camera);
+  vec.sub(camera.position).normalize();
+  const distance = -camera.position.y / vec.y;
+  pos.copy(camera.position).add(vec.multiplyScalar(distance));
+  sphere.position.x = pos.x;
+  sphere.position.z = pos.z;
+}
+canvas.addEventListener('mousemove', updateMouse2dPos);
 
 // loops updates
 function loop() {
@@ -89,18 +150,17 @@ function loop() {
     camera.aspect = canvas.clientWidth / canvas.clientHeight;
     camera.updateProjectionMatrix();
   }
+  const t = new Date().getTime() * 0.002;
+  cube.position.set(Math.sin(t), 0.15, Math.cos(t));
   localStorage.setItem(
     'cameraPosition',
     JSON.stringify(camera.position.toArray()),
   );
+  previewPlane.visible = false;
   interactor.render(renderer, scene);
+  previewPlane.visible = true;
   renderer.render(scene, camera);
   requestAnimationFrame(loop);
 }
 // runs a continuous loop
 loop();
-
-setTimeout(() => {
-  material.map = interactor.texture;
-  material.needsUpdate = true;
-}, 1000);
