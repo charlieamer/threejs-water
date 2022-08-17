@@ -29,6 +29,9 @@ const WebpackConfig = {
       imageMinimizerWebpackPlugin,
     ],
   },
+  output: {
+    publicPath: "/threejs-water/"
+  },
 };
 
 // Export configuration.

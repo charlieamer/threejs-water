@@ -45,7 +45,7 @@ const cameraPositionLS = localStorage.getItem('cameraPosition');
 if (cameraPositionLS) {
   camera.position.fromArray(JSON.parse(cameraPositionLS));
 } else {
-  camera.position.set(10, 5, 8);
+  camera.position.set(5, 2, 4);
 }
 camera.lookAt(0, 0, 0);
 
