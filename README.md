@@ -8,4 +8,4 @@ Water physics is approximated by simulating each pixel as a particle that has mo
 
 The height of water is then converted to a normal map and applied to a nice reflective plane.
 
-You can check out demo [here](https://charlieamer.github.io/threejs-water/).https://charlieamer.github.io/threejs-water/
+You can check out demo [here](https://charlieamer.github.io/threejs-water/).
