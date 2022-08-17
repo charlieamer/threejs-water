@@ -6,7 +6,6 @@ module.exports = {
   plugins: ['@typescript-eslint', 'prettier'],
   env: {
     es6: true,
-    jest: true,
     node: true,
     browser: true,
   },
@@ -16,7 +15,6 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'prettier',
     'plugin:prettier/recommended',
-    'plugin:jest-formatting/recommended',
   ],
   parserOptions: {
     ecmaVersion: 2018,

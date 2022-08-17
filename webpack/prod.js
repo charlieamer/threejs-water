@@ -1,20 +1,15 @@
 // Import dependencies.
 import { merge } from 'webpack-merge';
 import TerserPlugin from 'terser-webpack-plugin';
-import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 
 // Import Configuration.
-import {
-  cleanWebpackPlugin,
-  miniCssExtractPlugin,
-  imageMinimizerWebpackPlugin,
-} from './plugins';
+import { cleanWebpackPlugin } from './plugins';
 import { WebpackCommonConfig } from './common';
 
 /**
  * Plugins for production build.
  */
-const plugins = [cleanWebpackPlugin, miniCssExtractPlugin];
+const plugins = [cleanWebpackPlugin];
 
 /**
  * Webpack production configuration.
@@ -23,14 +18,10 @@ const WebpackConfig = {
   plugins,
   optimization: {
     minimize: true,
-    minimizer: [
-      new CssMinimizerPlugin(),
-      new TerserPlugin(),
-      imageMinimizerWebpackPlugin,
-    ],
+    minimizer: [new TerserPlugin()],
   },
   output: {
-    publicPath: "/threejs-water/"
+    publicPath: '/threejs-water/',
   },
 };
 
