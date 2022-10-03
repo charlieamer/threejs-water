@@ -41,7 +41,7 @@
   "dependencies": {
     "dat.gui": "^0.7.9",
     "gh-pages": "^4.0.0",
-    "three": "^0.143.0"
+    "three": "^0.145.0"
   },
   "browserslist": [
     "> 5%",
